@@ -1,12 +1,18 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Administration — Routine</title>
-<!-- Pas de meta robots pour garder discret, pas indexé -->
 <meta name="robots" content="noindex, nofollow">
+<!-- PWA Admin -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0F1117">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Admin Routine">
+<link rel="apple-touch-icon" href="../icon-admin-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -19,7 +25,7 @@
   *{margin:0;padding:0;box-sizing:border-box;}
   body{background:var(--bg);font-family:'Nunito Sans',sans-serif;color:var(--text);min-height:100vh;}
 
-  /* ── LOGIN ── */
+  /* LOGIN */
   #loginScreen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px;}
   .login-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:40px 36px;width:100%;max-width:380px;text-align:center;box-shadow:var(--shadow);animation:fadeUp 0.5s ease both;}
   .login-card h2{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.6rem;margin-bottom:8px;}
@@ -31,33 +37,45 @@
   .btn-login:hover{opacity:0.88;transform:translateY(-1px);}
   .login-error{color:#FF6B6B;font-size:0.85rem;margin-top:10px;display:none;font-weight:600;}
 
-  /* ── TOPBAR ── */
+  /* INSTALL CARD après login */
+  #installCard{display:none;margin-top:20px;background:var(--surface2);border:1px solid var(--accent);border-radius:14px;padding:20px;text-align:left;animation:fadeUp 0.4s ease both;}
+  .ic-title{font-family:'Nunito',sans-serif;font-weight:800;font-size:1rem;margin-bottom:4px;display:flex;align-items:center;gap:8px;}
+  .ic-sub{font-size:0.82rem;color:var(--muted);margin-bottom:16px;line-height:1.5;}
+  .ic-btns{display:flex;gap:10px;}
+  .btn-install{background:var(--accent);color:white;border:none;border-radius:8px;padding:11px 22px;font-family:'Nunito',sans-serif;font-weight:800;font-size:0.9rem;cursor:pointer;flex:1;transition:opacity 0.2s;}
+  .btn-install:hover{opacity:0.88;}
+  .btn-skip{background:transparent;color:var(--muted);border:1.5px solid var(--border);border-radius:8px;padding:11px 18px;font-family:'Nunito',sans-serif;font-weight:700;font-size:0.9rem;cursor:pointer;transition:all 0.15s;}
+  .btn-skip:hover{border-color:var(--text);color:var(--text);}
+
+  /* TOPBAR */
   #adminScreen{display:none;}
   .topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:15px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
   .topbar-title{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.1rem;display:flex;align-items:center;gap:8px;}
   .topbar-title span{color:var(--accent);}
-  .topbar-actions{display:flex;gap:8px;}
+  .topbar-actions{display:flex;gap:8px;align-items:center;}
   .btn-sm{font-family:'Nunito',sans-serif;font-weight:700;font-size:0.8rem;padding:7px 16px;border-radius:999px;border:none;cursor:pointer;transition:all 0.15s;}
   .btn-outline{background:transparent;color:var(--muted);border:1.5px solid var(--border);}
   .btn-outline:hover{border-color:var(--text);color:var(--text);}
   .btn-danger{background:rgba(255,100,100,0.1);color:#FF6B6B;border:1.5px solid rgba(255,100,100,0.2);}
   .btn-danger:hover{background:rgba(255,100,100,0.2);}
+  .btn-accent{background:rgba(108,99,255,0.15);color:var(--accent);border:1.5px solid rgba(108,99,255,0.3);}
+  .btn-accent:hover{background:rgba(108,99,255,0.25);}
 
-  /* ── BODY ── */
-  .admin-body{padding:28px 24px 60px;max-width:980px;margin:0 auto;}
+  /* BODY */
+  .admin-body{padding:28px 24px 80px;max-width:980px;margin:0 auto;}
 
-  /* ── STATS ── */
+  /* STATS */
   .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:32px;}
   .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;}
   .stat-label{font-size:0.72rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;}
   .stat-value{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.9rem;line-height:1;}
   .green{color:var(--accent2);} .orange{color:var(--warn);} .purple{color:var(--accent);}
 
-  /* ── SECTION TITLE ── */
+  /* SECTION TITLE */
   .sec-title{font-family:'Nunito',sans-serif;font-weight:800;font-size:0.85rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
   .sec-title::after{content:'';flex:1;height:1px;background:var(--border);}
 
-  /* ── CALENDAR ── */
+  /* CALENDAR */
   .cal-nav{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
   .cal-nav-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text);width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:1rem;transition:all 0.15s;display:flex;align-items:center;justify-content:center;}
   .cal-nav-btn:hover{border-color:var(--accent);color:var(--accent);}
@@ -72,7 +90,7 @@
   .cal-cell .cal-pct{font-size:0.6rem;font-weight:600;margin-top:1px;}
   .cal-cell.selected{box-shadow:0 0 0 2px white;}
 
-  /* ── HISTORY LIST ── */
+  /* HISTORY */
   .history-list{display:flex;flex-direction:column;gap:8px;margin-bottom:28px;}
   .history-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 18px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:all 0.18s;}
   .history-item:hover{border-color:var(--accent);transform:translateX(3px);}
@@ -85,7 +103,7 @@
   .hi-count{font-size:0.75rem;color:var(--muted);margin-top:3px;}
   .hi-badge{font-size:0.72rem;font-weight:700;padding:3px 10px;border-radius:999px;white-space:nowrap;}
 
-  /* ── DETAIL ── */
+  /* DETAIL */
   #detailPanel{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:24px;display:none;animation:fadeUp 0.3s ease both;}
   .detail-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;}
   .detail-header h3{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.1rem;}
@@ -101,11 +119,7 @@
   .detail-task.done .tn{color:var(--text);}
   .detail-task.missed .tn{color:var(--muted);}
 
-  /* ── EMPTY ── */
-  .empty-state{text-align:center;padding:60px 20px;color:var(--muted);}
-  .empty-state .big{font-size:3rem;margin-bottom:12px;}
-
-  /* ── CHANGE PASSWORD ── */
+  /* SETTINGS */
   .pwd-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;margin-bottom:32px;}
   .pwd-row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-top:12px;}
   .pwd-row input{flex:1;min-width:160px;background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-family:'Nunito Sans',sans-serif;font-size:0.9rem;outline:none;transition:border-color 0.2s;}
@@ -115,10 +129,19 @@
   .btn-save-pwd:hover{opacity:0.88;}
   .pwd-feedback{font-size:0.8rem;margin-top:8px;font-weight:600;}
 
+  /* BANNIÈRE INSTALL FLOTTANTE */
+  #floatingInstall{position:fixed;bottom:0;left:0;right:0;z-index:9999;background:var(--surface);border-top:1px solid var(--border);padding:14px 20px;display:none;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 -4px 20px rgba(0,0,0,0.5);}
+  .fi-info{display:flex;align-items:center;gap:12px;}
+  .fi-title{font-family:'Nunito',sans-serif;font-weight:800;font-size:0.9rem;}
+  .fi-sub{font-size:0.75rem;color:var(--muted);margin-top:2px;}
+
+  .empty-state{text-align:center;padding:60px 20px;color:var(--muted);}
+  .empty-state .big{font-size:3rem;margin-bottom:12px;}
+
   @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 
   @media(max-width:580px){
-    .admin-body{padding:16px 12px 60px;}
+    .admin-body{padding:16px 12px 80px;}
     .topbar{padding:12px 14px;}
     .hi-date{min-width:auto;font-size:0.82rem;}
     .hi-badge{display:none;}
@@ -131,30 +154,38 @@
 <!-- ══ LOGIN ══ -->
 <div id="loginScreen">
   <div class="login-card">
-    <div style="font-size:2.5rem;margin-bottom:12px">🔐</div>
+    <div style="font-size:2.5rem;margin-bottom:12px">🛡️</div>
     <h2>Administration</h2>
     <p>Accès réservé</p>
     <input type="password" id="pwInput" placeholder="Mot de passe" autocomplete="off">
     <button class="btn-login" onclick="tryLogin()">Connexion</button>
     <div class="login-error" id="loginError">Mot de passe incorrect</div>
+
+    <!-- Carte d'installation proposée après 1ère connexion réussie -->
+    <div id="installCard">
+      <div class="ic-title">📲 Installer l'application</div>
+      <div class="ic-sub">Ajoutez l'admin à votre écran d'accueil pour y accéder directement, sans repasser par le navigateur.</div>
+      <div class="ic-btns">
+        <button class="btn-install" id="installBtnLogin">Installer maintenant</button>
+        <button class="btn-skip" id="skipBtnLogin">Plus tard</button>
+      </div>
+    </div>
   </div>
 </div>
 
 <!-- ══ ADMIN ══ -->
 <div id="adminScreen">
   <div class="topbar">
-    <div class="topbar-title">📊 <span>Routine</span> — Administration</div>
+    <div class="topbar-title">📊 <span>Routine</span> — Admin</div>
     <div class="topbar-actions">
+      <button class="btn-sm btn-accent" id="topInstallBtn" style="display:none" onclick="triggerInstall()">📲 Installer</button>
       <button class="btn-sm btn-danger" onclick="logout()">Déconnexion</button>
     </div>
   </div>
 
   <div class="admin-body">
-
-    <!-- Stats -->
     <div class="stats-grid" id="statsGrid"></div>
 
-    <!-- Changer mot de passe -->
     <div class="sec-title">⚙️ Paramètres</div>
     <div class="pwd-section">
       <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:0.95rem;">Changer le mot de passe admin</div>
@@ -166,7 +197,6 @@
       <div class="pwd-feedback" id="pwdFeedback"></div>
     </div>
 
-    <!-- Calendrier -->
     <div class="sec-title">📅 Vue calendrier</div>
     <div class="cal-nav">
       <button class="cal-nav-btn" onclick="changeMonth(-1)">‹</button>
@@ -175,11 +205,9 @@
     </div>
     <div class="calendar-grid" id="calendarGrid"></div>
 
-    <!-- Historique -->
     <div class="sec-title">📋 Historique des journées</div>
     <div class="history-list" id="historyList"></div>
 
-    <!-- Détail -->
     <div id="detailPanel">
       <div class="detail-header">
         <h3 id="detailTitle"></h3>
@@ -187,70 +215,146 @@
       </div>
       <div class="detail-sections" id="detailContent"></div>
     </div>
+  </div>
+</div>
 
+<!-- Bannière install dans l'app admin -->
+<div id="floatingInstall">
+  <div class="fi-info">
+    <span style="font-size:1.6rem">🛡️</span>
+    <div>
+      <div class="fi-title">Installer l'app admin</div>
+      <div class="fi-sub">Accès rapide depuis l'écran d'accueil</div>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;flex-shrink:0">
+    <button class="btn-install" style="padding:9px 16px;font-size:0.82rem" onclick="triggerInstall()">Installer</button>
+    <button class="btn-skip" style="padding:9px 12px;font-size:0.82rem" onclick="document.getElementById('floatingInstall').style.display='none'">✕</button>
   </div>
 </div>
 
 <script>
-// ── Données tâches (miroir de index.html) ──
+// ════════════════════════════════════════
+// DONNÉES
+// ════════════════════════════════════════
 const TASKS_DATA = [
-  { id:"morning",   label:"Matin",       icon:"🌅", color:"#FF8C42", tasks:["Se lever","Hygiène personnelle","S'habiller","Petit-déjeuner","Médicaments / vitamines","Préparer son sac"]},
-  { id:"midday",    label:"Midi",        icon:"☀️", color:"#FFD166", tasks:["Repas du midi","Brossage de dents","Marche ou pause dehors","Moment calme"]},
-  { id:"afternoon", label:"Après-midi",  icon:"🌤️", color:"#06D6A0", tasks:["Activité principale","Boire de l'eau","Loisir choisi","Contact social"]},
-  { id:"evening",   label:"Soirée",      icon:"🌆", color:"#118AB2", tasks:["Préparer le souper","Souper","Petite tâche ménagère","Activité de décompression","Journal du jour"]},
-  { id:"night",     label:"Nuit",        icon:"🌙", color:"#9B8EF0", tasks:["Réduire les écrans","Routine du soir","Préparer demain","Lecture ou musique calme","Au lit à l'heure prévue"]}
+  { id:"morning",   label:"Matin",      icon:"🌅", color:"#FF8C42", tasks:["Se lever","Hygiène personnelle","S'habiller","Petit-déjeuner","Médicaments / vitamines","Préparer son sac"]},
+  { id:"midday",    label:"Midi",       icon:"☀️", color:"#FFD166", tasks:["Repas du midi","Brossage de dents","Marche ou pause dehors","Moment calme"]},
+  { id:"afternoon", label:"Après-midi", icon:"🌤️", color:"#06D6A0", tasks:["Activité principale","Boire de l'eau","Loisir choisi","Contact social"]},
+  { id:"evening",   label:"Soirée",     icon:"🌆", color:"#118AB2", tasks:["Préparer le souper","Souper","Petite tâche ménagère","Activité de décompression","Journal du jour"]},
+  { id:"night",     label:"Nuit",       icon:"🌙", color:"#9B8EF0", tasks:["Réduire les écrans","Routine du soir","Préparer demain","Lecture ou musique calme","Au lit à l'heure prévue"]}
 ];
-const TOTAL = TASKS_DATA.reduce((a,s)=>a+s.tasks.length, 0);
+const TOTAL = TASKS_DATA.reduce((a,s)=>a+s.tasks.length,0);
 
-const HISTORY_KEY  = 'routine_history_v2';
+const HISTORY_KEY   = 'routine_history_v2';
 const ADMIN_PWD_KEY = 'routine_admin_pwd';
-const SESSION_KEY  = 'routine_admin_session';
+const AUTH_KEY      = 'routine_admin_auth'; // persistant dans localStorage
 
 const DAYS_LONG  = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
 const DAYS_SHORT = ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
 const MONTHS_FR  = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
 const MONTHS_LOW = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
 
-let calViewDate = new Date(); // mois affiché dans le calendrier
+let calViewDate = new Date();
+let deferredInstallPrompt = null;
 
-// ── Mot de passe (stocké en localStorage, modifiable) ──
+// ════════════════════════════════════════
+// PWA
+// ════════════════════════════════════════
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  // Si déjà connecté → montrer bannière flottante
+  if (isLoggedIn()) {
+    document.getElementById('floatingInstall').style.display = 'flex';
+    document.getElementById('topInstallBtn').style.display = 'inline-block';
+  }
+});
+
+async function triggerInstall() {
+  if (!deferredInstallPrompt) return;
+  deferredInstallPrompt.prompt();
+  const { outcome } = await deferredInstallPrompt.userChoice;
+  deferredInstallPrompt = null;
+  // Cacher toutes les bannières d'install
+  ['floatingInstall','installCard'].forEach(id => {
+    document.getElementById(id).style.display = 'none';
+  });
+  document.getElementById('topInstallBtn').style.display = 'none';
+}
+
+window.addEventListener('appinstalled', () => {
+  deferredInstallPrompt = null;
+  document.getElementById('floatingInstall').style.display = 'none';
+  document.getElementById('topInstallBtn').style.display = 'none';
+});
+
+// ════════════════════════════════════════
+// AUTH PERSISTANTE
+// ════════════════════════════════════════
 function getAdminPwd() {
   return localStorage.getItem(ADMIN_PWD_KEY) || 'admin123';
 }
-
-// ── Auth ──
 function isLoggedIn() {
-  return sessionStorage.getItem(SESSION_KEY) === '1';
+  return localStorage.getItem(AUTH_KEY) === btoa(getAdminPwd());
 }
+function setLoggedIn() {
+  localStorage.setItem(AUTH_KEY, btoa(getAdminPwd()));
+}
+function clearAuth() {
+  localStorage.removeItem(AUTH_KEY);
+}
+
 function tryLogin() {
   const v = document.getElementById('pwInput').value;
   if (v === getAdminPwd()) {
-    sessionStorage.setItem(SESSION_KEY, '1');
-    document.getElementById('loginScreen').style.display  = 'none';
-    document.getElementById('adminScreen').style.display  = 'block';
-    buildAdmin();
+    setLoggedIn();
+    document.getElementById('loginError').style.display = 'none';
+
+    // Proposer l'installation si le prompt est disponible
+    if (deferredInstallPrompt) {
+      const card = document.getElementById('installCard');
+      card.style.display = 'block';
+      document.getElementById('installBtnLogin').onclick = async () => {
+        await triggerInstall();
+        enterAdmin();
+      };
+      document.getElementById('skipBtnLogin').onclick = enterAdmin;
+    } else {
+      enterAdmin();
+    }
   } else {
     document.getElementById('loginError').style.display = 'block';
     document.getElementById('pwInput').value = '';
     document.getElementById('pwInput').focus();
   }
 }
+
+function enterAdmin() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('adminScreen').style.display = 'block';
+  buildAdmin();
+}
+
 function logout() {
-  sessionStorage.removeItem(SESSION_KEY);
+  clearAuth();
   document.getElementById('adminScreen').style.display = 'none';
   document.getElementById('loginScreen').style.display = 'flex';
   document.getElementById('pwInput').value = '';
   document.getElementById('loginError').style.display = 'none';
+  document.getElementById('installCard').style.display = 'none';
 }
 
-// Si déjà connecté dans cette session, afficher directement
+// Auto-login si token valide
 if (isLoggedIn()) {
-  document.getElementById('loginScreen').style.display = 'none';
-  document.getElementById('adminScreen').style.display = 'block';
-  document.addEventListener('DOMContentLoaded', buildAdmin);
+  document.addEventListener('DOMContentLoaded', () => {
+    enterAdmin();
+  });
 }
 
-// ── Données ──
+// ════════════════════════════════════════
+// DONNÉES HISTORIQUE
+// ════════════════════════════════════════
 function getHistory() {
   try { return JSON.parse(localStorage.getItem(HISTORY_KEY)) || {}; } catch { return {}; }
 }
@@ -260,10 +364,9 @@ function todayKey() {
 }
 function enrichEntry(e) {
   const done = Object.values(e.tasks||{}).filter(Boolean).length;
-  return { ...e, done, total:TOTAL, pct:Math.round((done/TOTAL)*100) };
+  return {...e, done, total:TOTAL, pct:Math.round((done/TOTAL)*100)};
 }
 
-// ── Build admin ──
 function buildAdmin() {
   const history = getHistory();
   const entries = Object.values(history).map(enrichEntry).sort((a,b)=>b.date.localeCompare(a.date));
@@ -272,17 +375,19 @@ function buildAdmin() {
   buildHistoryList(entries);
 }
 
-// ── Stats ──
+// ════════════════════════════════════════
+// STATS
+// ════════════════════════════════════════
 function buildStats(entries) {
   if (!entries.length) {
     document.getElementById('statsGrid').innerHTML =
       `<div class="stat-card"><div class="stat-label">Jours enregistrés</div><div class="stat-value purple">0</div></div>`;
     return;
   }
-  const avg     = Math.round(entries.reduce((a,e)=>a+e.pct,0)/entries.length);
-  const perfect = entries.filter(e=>e.pct===100).length;
-  const streak  = calcStreak(entries);
-  const todayE  = entries.find(e=>e.date===todayKey());
+  const avg      = Math.round(entries.reduce((a,e)=>a+e.pct,0)/entries.length);
+  const perfect  = entries.filter(e=>e.pct===100).length;
+  const streak   = calcStreak(entries);
+  const todayE   = entries.find(e=>e.date===todayKey());
   const todayPct = todayE ? todayE.pct : 0;
   document.getElementById('statsGrid').innerHTML = `
     <div class="stat-card"><div class="stat-label">Jours enregistrés</div><div class="stat-value purple">${entries.length}</div></div>
@@ -293,25 +398,26 @@ function buildStats(entries) {
 }
 function calcStreak(entries) {
   let streak=0, d=new Date();
-  for (let i=0;i<366;i++) {
+  for(let i=0;i<366;i++){
     const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-    const e=entries.find(x=>x.date===key);
-    if (e && e.pct>0) { streak++; d.setDate(d.getDate()-1); } else break;
+    if(entries.find(x=>x.date===key && x.pct>0)){streak++;d.setDate(d.getDate()-1);}else break;
   }
   return streak;
 }
 
-// ── Calendrier ──
+// ════════════════════════════════════════
+// CALENDRIER
+// ════════════════════════════════════════
 function changeMonth(dir) {
   calViewDate.setMonth(calViewDate.getMonth()+dir);
   buildCalendar(getHistory());
 }
 function buildCalendar(history) {
   const yr=calViewDate.getFullYear(), mo=calViewDate.getMonth();
-  document.getElementById('calMonthLabel').textContent = `${MONTHS_FR[mo]} ${yr}`;
+  document.getElementById('calMonthLabel').textContent=`${MONTHS_FR[mo]} ${yr}`;
   const firstDay=new Date(yr,mo,1).getDay();
   const daysInMonth=new Date(yr,mo+1,0).getDate();
-  const todayD=new Date(), todayStr=todayKey();
+  const todayStr=todayKey();
   let html=DAYS_SHORT.map(d=>`<div class="cal-day-header">${d}</div>`).join('');
   for(let i=0;i<firstDay;i++) html+=`<div class="cal-cell empty"></div>`;
   for(let d=1;d<=daysInMonth;d++){
@@ -319,10 +425,9 @@ function buildCalendar(history) {
     const e=history[key];
     const isToday=key===todayStr;
     if(e){
-      const done=Object.values(e.tasks||{}).filter(Boolean).length;
-      const pct=Math.round((done/TOTAL)*100);
+      const pct=Math.round((Object.values(e.tasks||{}).filter(Boolean).length/TOTAL)*100);
       const c=pct===100?'#06D6A0':pct>=70?'#FFD166':pct>=30?'#FF8C42':'#FF6B6B';
-      html+=`<div class="cal-cell has-data${isToday?' today':''}" style="background:${c}22;border-color:${c}44" onclick="showDetail('${key}')" title="${pct}%">
+      html+=`<div class="cal-cell has-data${isToday?' today':''}" style="background:${c}22;border-color:${c}44" onclick="showDetail('${key}')">
         ${d}<div class="cal-pct" style="color:${c}">${pct}%</div></div>`;
     } else {
       html+=`<div class="cal-cell no-data${isToday?' today':''}">${d}</div>`;
@@ -331,10 +436,13 @@ function buildCalendar(history) {
   document.getElementById('calendarGrid').innerHTML=html;
 }
 
-// ── Historique ──
+// ════════════════════════════════════════
+// HISTORIQUE
+// ════════════════════════════════════════
 function buildHistoryList(entries) {
   if(!entries.length){
-    document.getElementById('historyList').innerHTML=`<div class="empty-state"><div class="big">📭</div><p>Aucune journée enregistrée pour le moment.</p></div>`;
+    document.getElementById('historyList').innerHTML=
+      `<div class="empty-state"><div class="big">📭</div><p>Aucune journée enregistrée pour le moment.</p></div>`;
     return;
   }
   document.getElementById('historyList').innerHTML=entries.map(e=>{
@@ -342,9 +450,8 @@ function buildHistoryList(entries) {
     const badge=e.pct===100?'🏆 Parfaite':e.pct>=70?'👍 Bonne':e.pct>=30?'🌱 Partielle':'⚠️ Faible';
     const d=new Date(e.date+'T12:00:00');
     const lbl=`${DAYS_LONG[d.getDay()]} ${d.getDate()} ${MONTHS_LOW[d.getMonth()]} ${d.getFullYear()}`;
-    const isToday=e.date===todayKey();
     return `<div class="history-item" id="hi-${e.date}" onclick="showDetail('${e.date}')">
-      <div><div class="hi-date">${isToday?'📍 ':''}${lbl}</div><div class="hi-count">${e.done} / ${TOTAL} tâches</div></div>
+      <div><div class="hi-date">${e.date===todayKey()?'📍 ':''}${lbl}</div><div class="hi-count">${e.done} / ${TOTAL} tâches</div></div>
       <div class="hi-bar-wrap"><div class="hi-bar-track"><div class="hi-bar-fill" style="width:${e.pct}%;background:${c}"></div></div></div>
       <div class="hi-pct" style="color:${c}">${e.pct}%</div>
       <div class="hi-badge" style="background:${c}22;color:${c}">${badge}</div>
@@ -352,12 +459,13 @@ function buildHistoryList(entries) {
   }).join('');
 }
 
-// ── Détail ──
-function showDetail(dateKey){
+// ════════════════════════════════════════
+// DÉTAIL
+// ════════════════════════════════════════
+function showDetail(dateKey) {
   const history=getHistory(), e=history[dateKey];
-  if(!e)return;
+  if(!e) return;
   document.querySelectorAll('.history-item').forEach(el=>el.classList.remove('selected'));
-  document.querySelectorAll('.cal-cell').forEach(el=>el.classList.remove('selected'));
   const hi=document.getElementById('hi-'+dateKey);
   if(hi){hi.classList.add('selected');hi.scrollIntoView({behavior:'smooth',block:'nearest'});}
   const d=new Date(dateKey+'T12:00:00');
@@ -370,8 +478,7 @@ function showDetail(dateKey){
   TASKS_DATA.forEach(section=>{
     html+=`<div><div class="detail-sec-header" style="color:${section.color}">${section.icon} ${section.label}</div><div class="detail-tasks">`;
     section.tasks.forEach((tl,i)=>{
-      const key=`${section.id}_${i}`;
-      const isDone=!!(e.tasks||{})[key];
+      const isDone=!!(e.tasks||{})[`${section.id}_${i}`];
       html+=`<div class="detail-task ${isDone?'done':'missed'}"><div class="ck">${isDone?'✓':'–'}</div><div class="tn">${tl}</div></div>`;
     });
     html+=`</div></div>`;
@@ -387,10 +494,12 @@ function showDetail(dateKey){
 }
 function closeDetail(){
   document.getElementById('detailPanel').style.display='none';
-  document.querySelectorAll('.history-item, .cal-cell').forEach(el=>el.classList.remove('selected'));
+  document.querySelectorAll('.history-item').forEach(el=>el.classList.remove('selected'));
 }
 
-// ── Changer mot de passe ──
+// ════════════════════════════════════════
+// MOT DE PASSE
+// ════════════════════════════════════════
 function changePassword(){
   const p1=document.getElementById('newPwd1').value.trim();
   const p2=document.getElementById('newPwd2').value.trim();
@@ -398,15 +507,24 @@ function changePassword(){
   if(!p1){fb.style.color='#FF6B6B';fb.textContent='Le mot de passe ne peut pas être vide.';return;}
   if(p1.length<6){fb.style.color='#FF6B6B';fb.textContent='Minimum 6 caractères.';return;}
   if(p1!==p2){fb.style.color='#FF6B6B';fb.textContent='Les deux mots de passe ne correspondent pas.';return;}
-  localStorage.setItem(ADMIN_PWD_KEY, p1);
+  localStorage.setItem(ADMIN_PWD_KEY,p1);
+  setLoggedIn(); // Renouveler le token avec le nouveau mot de passe
   document.getElementById('newPwd1').value='';
   document.getElementById('newPwd2').value='';
   fb.style.color='#06D6A0';
   fb.textContent='✅ Mot de passe mis à jour !';
-  setTimeout(()=>fb.textContent='', 3000);
+  setTimeout(()=>fb.textContent='',3000);
 }
 
-// ── Enter key ──
+// ════════════════════════════════════════
+// SERVICE WORKER
+// ════════════════════════════════════════
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('/routquo/admin/sw.js').catch(()=>{});
+  });
+}
+
 document.getElementById('pwInput').addEventListener('keydown', e=>{ if(e.key==='Enter') tryLogin(); });
 </script>
 </body>

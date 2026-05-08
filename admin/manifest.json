@@ -1,0 +1,25 @@
+{
+  "name": "Routine — Administration",
+  "short_name": "Admin Routine",
+  "description": "Tableau de bord administrateur — Routine quotidienne",
+  "start_url": "/routquo/admin/",
+  "scope": "/routquo/admin/",
+  "display": "standalone",
+  "background_color": "#0F1117",
+  "theme_color": "#0F1117",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "../icon-admin-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "../icon-admin-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
