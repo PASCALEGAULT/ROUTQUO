@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ma Routine Quotidienne</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F4EF;
+    --card: #FFFFFF;
+    --morning: #FF8C42;
+    --midday: #D4A017;
+    --afternoon: #059669;
+    --evening: #118AB2;
+    --night: #2D3561;
+    --text: #1A1A2E;
+    --muted: #7A7A8C;
+    --done-bg: #E8F5E9;
+    --done-border: #A5D6A7;
+    --radius: 16px;
+    --shadow: 0 4px 20px rgba(0,0,0,0.08);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); font-family:'Nunito Sans',sans-serif; color:var(--text); min-height:100vh; padding:24px 16px 60px; }
+
+  header { text-align:center; margin-bottom:28px; animation:fadeDown 0.6s ease both; }
+  header h1 { font-family:'Nunito',sans-serif; font-weight:900; font-size:clamp(1.6rem,5vw,2.4rem); color:var(--text); }
+  header p { color:var(--muted); font-size:0.95rem; margin-top:6px; }
+  .date-badge { display:inline-block; background:var(--text); color:white; font-family:'Nunito',sans-serif; font-weight:700; font-size:0.85rem; padding:6px 16px; border-radius:999px; margin-top:10px; }
+
+  .progress-bar-wrap { max-width:480px; margin:0 auto 32px; animation:fadeDown 0.7s ease both; }
+  .progress-label { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; font-family:'Nunito',sans-serif; font-weight:700; font-size:0.9rem; }
+  .progress-track { height:14px; background:#E0DDD8; border-radius:999px; overflow:hidden; }
+  .progress-fill { height:100%; background:linear-gradient(90deg,var(--morning),var(--afternoon),var(--evening)); border-radius:999px; transition:width 0.5s ease; width:0%; }
+
+  .sections { display:flex; flex-direction:column; gap:28px; max-width:560px; margin:0 auto; }
+  .section { animation:fadeUp 0.5s ease both; }
+  .section:nth-child(1){animation-delay:0.1s} .section:nth-child(2){animation-delay:0.2s}
+  .section:nth-child(3){animation-delay:0.3s} .section:nth-child(4){animation-delay:0.4s}
+  .section:nth-child(5){animation-delay:0.5s}
+
+  .section-header { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+  .section-icon { width:38px; height:38px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.3rem; flex-shrink:0; }
+  .section-title { font-family:'Nunito',sans-serif; font-weight:800; font-size:1.05rem; }
+  .section-time { font-size:0.8rem; color:var(--muted); font-weight:600; margin-left:auto; }
+
+  .tasks { display:flex; flex-direction:column; gap:8px; }
+  .task { background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); border-left:5px solid transparent; padding:14px 16px; display:flex; align-items:center; gap:14px; cursor:pointer; transition:transform 0.15s ease,box-shadow 0.15s ease,background 0.2s ease; user-select:none; -webkit-tap-highlight-color:transparent; }
+  .task:hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(0,0,0,0.12); }
+  .task:active { transform:scale(0.98); }
+  .task.done { background:var(--done-bg); border-left-color:var(--done-border); }
+  .task.done .task-label { text-decoration:line-through; color:var(--muted); }
+
+  .checkbox { width:26px; height:26px; border-radius:8px; border:2.5px solid #CCC; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:all 0.2s ease; font-size:0.9rem; }
+  .task.done .checkbox { background:#4CAF50; border-color:#4CAF50; color:white; }
+  .task-emoji { font-size:1.4rem; flex-shrink:0; }
+  .task-content { flex:1; }
+  .task-label { font-family:'Nunito',sans-serif; font-weight:700; font-size:0.97rem; line-height:1.3; transition:color 0.2s; }
+  .task-desc { font-size:0.78rem; color:var(--muted); margin-top:2px; }
+
+  .s-morning .section-icon{background:#FFF0E8} .s-morning .section-title{color:var(--morning)} .s-morning .task{border-left-color:#FFD4B8}
+  .s-midday  .section-icon{background:#FFF9E6} .s-midday  .section-title{color:var(--midday)}  .s-midday  .task{border-left-color:#FFE8A0}
+  .s-afternoon .section-icon{background:#E6FBF5} .s-afternoon .section-title{color:var(--afternoon)} .s-afternoon .task{border-left-color:#A7EDD8}
+  .s-evening .section-icon{background:#E6F4FA} .s-evening .section-title{color:var(--evening)} .s-evening .task{border-left-color:#A8D8EC}
+  .s-night   .section-icon{background:#EAEBF4} .s-night   .section-title{color:var(--night)}   .s-night   .task{border-left-color:#BEC2E0}
+
+  .bottom-actions { max-width:560px; margin:32px auto 0; display:flex; gap:12px; flex-wrap:wrap; justify-content:center; }
+  .btn { font-family:'Nunito',sans-serif; font-weight:800; font-size:0.9rem; padding:13px 28px; border-radius:999px; border:none; cursor:pointer; transition:transform 0.15s,background 0.2s; }
+  .btn-primary { background:var(--text); color:white; }
+  .btn-primary:hover { background:#333; transform:translateY(-2px); }
+  .btn-secondary { background:white; color:var(--text); border:2px solid #DDD; }
+  .btn-secondary:hover { border-color:var(--text); transform:translateY(-2px); }
+  .btn:active { transform:scale(0.97)!important; }
+
+  .confetti-msg { text-align:center; margin-top:20px; font-family:'Nunito',sans-serif; font-weight:800; font-size:1.1rem; color:#059669; display:none; animation:pop 0.4s ease both; }
+
+  .save-toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(60px); background:#1A1A2E; color:white; font-family:'Nunito',sans-serif; font-weight:700; font-size:0.9rem; padding:12px 24px; border-radius:999px; opacity:0; transition:all 0.35s ease; z-index:999; white-space:nowrap; pointer-events:none; }
+  .save-toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+  @keyframes fadeDown { from{opacity:0;transform:translateY(-16px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes fadeUp   { from{opacity:0;transform:translateY(20px)}  to{opacity:1;transform:translateY(0)} }
+  @keyframes pop { 0%{transform:scale(0.7);opacity:0} 70%{transform:scale(1.08)} 100%{transform:scale(1);opacity:1} }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📋 Ma Routine Quotidienne</h1>
+  <p>Coche chaque tâche au fur et à mesure 👇</p>
+  <div class="date-badge" id="dateLabel"></div>
+</header>
+
+<div class="progress-bar-wrap">
+  <div class="progress-label">
+    <span>Progression du jour</span>
+    <span id="progressText">0 / 0 tâches</span>
+  </div>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+</div>
+
+<div class="sections" id="sections"></div>
+<div class="confetti-msg" id="doneMsg">🎉 Bravo ! Journée complète !</div>
+
+<div class="bottom-actions">
+  <button class="btn btn-primary" onclick="saveDay()">💾 Sauvegarder la journée</button>
+  <button class="btn btn-secondary" onclick="resetDay()">🔄 Recommencer</button>
+</div>
+
+<div class="save-toast" id="saveToast"></div>
+
+<script>
+const TASKS_DATA = [
+  { id:"morning", label:"Matin", icon:"🌅", time:"6h00 – 9h00", cls:"s-morning", tasks:[
+    {emoji:"⏰",label:"Se lever",              desc:"À la même heure chaque matin"},
+    {emoji:"🚿",label:"Hygiène personnelle",   desc:"Douche, déodorant, brossage de dents"},
+    {emoji:"👕",label:"S'habiller",            desc:"Choisir ses vêtements la veille si possible"},
+    {emoji:"🥣",label:"Petit-déjeuner",        desc:"Manger assis, sans écran si possible"},
+    {emoji:"💊",label:"Médicaments / vitamines",desc:"Si prescrit par un médecin"},
+    {emoji:"🎒",label:"Préparer son sac",      desc:"Pour la journée"},
+  ]},
+  { id:"midday", label:"Midi", icon:"☀️", time:"11h30 – 13h30", cls:"s-midday", tasks:[
+    {emoji:"🍽️",label:"Repas du midi",         desc:"Prendre le temps de manger tranquillement"},
+    {emoji:"🦷",label:"Brossage de dents",     desc:"Après le repas"},
+    {emoji:"🚶",label:"Marche ou pause dehors",desc:"10–15 minutes d'air frais"},
+    {emoji:"😌",label:"Moment calme",          desc:"Respiration, détente, musique douce"},
+  ]},
+  { id:"afternoon", label:"Après-midi", icon:"🌤️", time:"13h30 – 17h30", cls:"s-afternoon", tasks:[
+    {emoji:"📚",label:"Activité principale",   desc:"Travail, formation, loisir créatif ou structuré"},
+    {emoji:"💧",label:"Boire de l'eau",        desc:"Au moins un verre toutes les heures"},
+    {emoji:"🎮",label:"Loisir choisi",         desc:"Jeu vidéo, lecture, dessin, musique…"},
+    {emoji:"📞",label:"Contact social",        desc:"Message, appel ou rencontre"},
+  ]},
+  { id:"evening", label:"Soirée", icon:"🌆", time:"17h30 – 20h30", cls:"s-evening", tasks:[
+    {emoji:"🍳",label:"Préparer le souper",    desc:"Recette simple et connue de préférence"},
+    {emoji:"🍽️",label:"Souper",               desc:"Sans écran, moment tranquille"},
+    {emoji:"🧹",label:"Petite tâche ménagère", desc:"Ex : vaisselle, ramasser ses affaires"},
+    {emoji:"🎯",label:"Activité de décompression",desc:"Film, série, jeu, dessin…"},
+    {emoji:"📓",label:"Journal du jour",       desc:"1 à 3 phrases sur comment ça s'est passé"},
+  ]},
+  { id:"night", label:"Nuit", icon:"🌙", time:"20h30 – 22h30", cls:"s-night", tasks:[
+    {emoji:"📵",label:"Réduire les écrans",    desc:"Lumière bleue à éviter 1h avant le coucher"},
+    {emoji:"🛁",label:"Routine du soir",       desc:"Brossage de dents, visage, pyjama"},
+    {emoji:"📋",label:"Préparer demain",       desc:"Vêtements, sac, liste mentale"},
+    {emoji:"📖",label:"Lecture ou musique calme",desc:"Pour aider à se détendre"},
+    {emoji:"😴",label:"Au lit à l'heure prévue",desc:"Même heure chaque soir = meilleur sommeil"},
+  ]}
+];
+const TOTAL_TASKS = TASKS_DATA.reduce((a,s)=>a+s.tasks.length,0);
+
+function todayKey() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function getHistory() {
+  try { return JSON.parse(localStorage.getItem('routine_history_v2')) || {}; } catch { return {}; }
+}
+function saveHistory(h) {
+  try { localStorage.setItem('routine_history_v2', JSON.stringify(h)); } catch {} }
+
+function getTodayState() {
+  return getHistory()[todayKey()]?.tasks || {};
+}
+function saveTodayState(state) {
+  const h = getHistory(), key = todayKey();
+  if (!h[key]) h[key] = { date:key, tasks:{}, savedAt:null };
+  h[key].tasks = state;
+  h[key].done  = Object.values(state).filter(Boolean).length;
+  h[key].total = TOTAL_TASKS;
+  h[key].pct   = Math.round((h[key].done / TOTAL_TASKS) * 100);
+  saveHistory(h);
+}
+
+function buildUI() {
+  const state = getTodayState();
+  const container = document.getElementById('sections');
+  container.innerHTML = '';
+  let done = 0;
+
+  TASKS_DATA.forEach(section => {
+    const sec = document.createElement('div');
+    sec.className = `section ${section.cls}`;
+    sec.innerHTML = `
+      <div class="section-header">
+        <div class="section-icon">${section.icon}</div>
+        <div class="section-title">${section.label}</div>
+        <div class="section-time">${section.time}</div>
+      </div>
+      <div class="tasks" id="tasks-${section.id}"></div>`;
+    container.appendChild(sec);
+
+    const tc = sec.querySelector(`#tasks-${section.id}`);
+    section.tasks.forEach((t, i) => {
+      const key = `${section.id}_${i}`;
+      const isDone = !!state[key];
+      if (isDone) done++;
+      const el = document.createElement('div');
+      el.className = `task${isDone?' done':''}`;
+      el.innerHTML = `
+        <div class="checkbox">${isDone?'✓':''}</div>
+        <div class="task-emoji">${t.emoji}</div>
+        <div class="task-content">
+          <div class="task-label">${t.label}</div>
+          ${t.desc?`<div class="task-desc">${t.desc}</div>`:''}
+        </div>`;
+      el.addEventListener('click', () => toggleTask(key));
+      tc.appendChild(el);
+    });
+  });
+  updateProgress(done, TOTAL_TASKS);
+}
+
+function toggleTask(key) {
+  const state = getTodayState();
+  state[key] = !state[key];
+  saveTodayState(state);
+  buildUI();
+}
+
+function updateProgress(done, total) {
+  const pct = total > 0 ? Math.round((done/total)*100) : 0;
+  document.getElementById('progressFill').style.width = pct+'%';
+  document.getElementById('progressText').textContent = `${done} / ${total} tâches`;
+  document.getElementById('doneMsg').style.display = (done===total && total>0)?'block':'none';
+}
+
+function saveDay() {
+  const h = getHistory(), key = todayKey();
+  const state = getTodayState();
+  const done = Object.values(state).filter(Boolean).length;
+  if (!h[key]) h[key] = { date:key, tasks:state };
+  h[key].savedAt = new Date().toISOString();
+  h[key].tasks   = state;
+  h[key].done    = done;
+  h[key].total   = TOTAL_TASKS;
+  h[key].pct     = Math.round((done/TOTAL_TASKS)*100);
+  saveHistory(h);
+  showToast('✅ Journée sauvegardée !');
+}
+
+function resetDay() {
+  if (!confirm("Effacer la progression d'aujourd'hui ?")) return;
+  const h = getHistory(), key = todayKey();
+  if (h[key]) { h[key].tasks={}; h[key].done=0; h[key].pct=0; }
+  saveHistory(h);
+  buildUI();
+}
+
+function showToast(msg) {
+  const t = document.getElementById('saveToast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2500);
+}
+
+// Auto-init today entry
+(function() {
+  const h = getHistory(), key = todayKey();
+  if (!h[key]) { h[key]={date:key,tasks:{},savedAt:null,done:0,total:TOTAL_TASKS,pct:0}; saveHistory(h); }
+})();
+
+// Date label
+const DAYS   = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+const MONTHS = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+const now = new Date();
+document.getElementById('dateLabel').textContent =
+  `${DAYS[now.getDay()]} ${now.getDate()} ${MONTHS[now.getMonth()]} ${now.getFullYear()}`;
+
+buildUI();
+</script>
+</body>
+</html>
