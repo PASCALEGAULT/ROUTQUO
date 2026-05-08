@@ -4,6 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ma Routine Quotidienne</title>
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1A1A2E">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Routine">
+<link rel="apple-touch-icon" href="icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -268,6 +276,58 @@ document.getElementById('dateLabel').textContent =
   `${DAYS[now.getDay()]} ${now.getDate()} ${MONTHS[now.getMonth()]} ${now.getFullYear()}`;
 
 buildUI();
+
+// ── Service Worker (PWA) ──
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/routquo/sw.js')
+      .catch(() => {}); // silencieux si échec
+  });
+}
+
+// ── Bannière d'installation PWA ──
+let deferredPrompt = null;
+const installBanner = document.createElement('div');
+installBanner.id = 'installBanner';
+installBanner.style.cssText = `
+  position:fixed; bottom:0; left:0; right:0; z-index:9999;
+  background:#1A1A2E; color:white; padding:16px 20px;
+  display:none; align-items:center; justify-content:space-between;
+  gap:12px; box-shadow:0 -4px 20px rgba(0,0,0,0.3);
+  font-family:'Nunito Sans',sans-serif;
+`;
+installBanner.innerHTML = `
+  <div style="display:flex;align-items:center;gap:12px">
+    <span style="font-size:1.8rem">📋</span>
+    <div>
+      <div style="font-family:Nunito,sans-serif;font-weight:800;font-size:0.95rem">Installer l'application</div>
+      <div style="font-size:0.78rem;color:#9999BB;margin-top:2px">Ajouter à l'écran d'accueil</div>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;flex-shrink:0">
+    <button id="installBtn" style="background:#6C63FF;color:white;border:none;border-radius:8px;padding:9px 18px;font-family:Nunito,sans-serif;font-weight:800;font-size:0.85rem;cursor:pointer">Installer</button>
+    <button id="dismissBtn" style="background:transparent;color:#7A7D99;border:1.5px solid #2E3347;border-radius:8px;padding:9px 14px;font-family:Nunito,sans-serif;font-weight:700;font-size:0.85rem;cursor:pointer">Plus tard</button>
+  </div>`;
+document.body.appendChild(installBanner);
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  installBanner.style.display = 'flex';
+});
+document.getElementById('installBtn').addEventListener('click', async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  installBanner.style.display = 'none';
+});
+document.getElementById('dismissBtn').addEventListener('click', () => {
+  installBanner.style.display = 'none';
+});
+window.addEventListener('appinstalled', () => {
+  installBanner.style.display = 'none';
+});
 </script>
 </body>
 </html>
